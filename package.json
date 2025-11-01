@@ -1,0 +1,16 @@
+{
+  "name": "ghl-api-service",
+  "private": true,
+  "version": "1.0.0",
+  "description": "A Vercel serverless function to forward form submissions to GoHighLevel.",
+  "main": "api/submit.ts",
+  "scripts": {
+    "dev": "vercel dev"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "@types/node": "^20.11.24",
+    "@vercel/node": "^3.0.25",
+    "typescript": "^5.2.2"
+  }
+}

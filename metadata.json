@@ -1,0 +1,5 @@
+{
+  "name": "GHL Form Submitter",
+  "description": "A professional, responsive React form designed to capture lead information and submit it to a GoHighLevel (GHL) form endpoint.",
+  "requestFramePermissions": []
+}
