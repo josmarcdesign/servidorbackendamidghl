@@ -45,11 +45,19 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       body: payload.toString(),
     });
 
-    // Lê a resposta da GHL para depuração e para retornar ao cliente
-    const responseData = await ghlResponse.json().catch(async () => ({ message: await ghlResponse.text() }));
+    // Tenta parsear a resposta como JSON. Se falhar, usa o texto puro dentro de um objeto.
+    let responseData: any;
+    try {
+        responseData = await ghlResponse.json();
+    } catch (jsonError) {
+        // Se a resposta não for JSON, captura o corpo como texto para evitar o erro de 'unknown' type.
+        const textResponse = await ghlResponse.text();
+        responseData = { message: textResponse };
+    }
 
     if (!ghlResponse.ok) {
       console.error('GHL API Error:', responseData);
+      // Agora é seguro acessar .message, pois garantimos que responseData é um objeto.
       const errorMessage = responseData.message || (typeof responseData === 'string' ? responseData : 'Submission to GHL failed.');
       return res.status(ghlResponse.status).json({ message: errorMessage });
     }
