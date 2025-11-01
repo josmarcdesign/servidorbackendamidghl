@@ -45,20 +45,22 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       body: payload.toString(),
     });
 
-    // Tenta parsear a resposta como JSON. Se falhar, usa o texto puro dentro de um objeto.
+    // Abordagem robusta: lê a resposta como texto primeiro.
+    const responseText = await ghlResponse.text();
     let responseData: any;
+
     try {
-        responseData = await ghlResponse.json();
-    } catch (jsonError) {
-        // Se a resposta não for JSON, captura o corpo como texto para evitar o erro de 'unknown' type.
-        const textResponse = await ghlResponse.text();
-        responseData = { message: textResponse };
+        // Tenta parsear o texto como JSON.
+        responseData = JSON.parse(responseText);
+    } catch (e) {
+        // Se falhar (resposta não era JSON), usa o texto bruto como a mensagem de erro.
+        responseData = { message: responseText };
     }
 
     if (!ghlResponse.ok) {
       console.error('GHL API Error:', responseData);
-      // Agora é seguro acessar .message, pois garantimos que responseData é um objeto.
-      const errorMessage = responseData.message || (typeof responseData === 'string' ? responseData : 'Submission to GHL failed.');
+      // Agora 'responseData' é garantidamente um objeto.
+      const errorMessage = responseData?.message || JSON.stringify(responseData) || 'Submission to GHL failed.';
       return res.status(ghlResponse.status).json({ message: errorMessage });
     }
     
